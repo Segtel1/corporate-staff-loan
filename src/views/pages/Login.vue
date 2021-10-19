@@ -6,25 +6,32 @@
           <CCardGroup>
             <CCard class="p-4">
               <CCardBody>
-                <CForm>
-                  <h1>Login</h1>
+                <CForm @submit.prevent="login">
+                  <h4>Login</h4>
                   <p class="text-muted">Sign In to your account</p>
+                  <CAlert
+                      color="danger"
+                      closeButton
+                      v-show="error == true"
+                    >
+                      {{message}}
+                  </CAlert>
                   <CInput
-                    placeholder="Username"
-                    autocomplete="username email"
+                    placeholder="Email"
+                    v-model="email"
                   >
-                    <template #prepend-content><CIcon name="cil-user"/></template>
+                    <template #prepend-content>@</template>
                   </CInput>
                   <CInput
                     placeholder="Password"
                     type="password"
-                    autocomplete="curent-password"
+                    v-model="password"
                   >
                     <template #prepend-content><CIcon name="cil-lock-locked"/></template>
                   </CInput>
                   <CRow>
                     <CCol col="6" class="text-left">
-                      <CButton color="primary" class="px-4">Login</CButton>
+                      <CButton color="primary" type="submit" class="px-4">Login</CButton>
                     </CCol>
                     <CCol col="6" class="text-right">
                       <CButton color="link" class="px-0">Forgot password?</CButton>
@@ -41,14 +48,24 @@
               body-wrapper
             >
               <CCardBody>
-                <h2>Sign up</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <h4>Sign up</h4>
+                <p>Corporate staff loan application , disbursement and repayment made easy</p>
                 <CButton
                   color="light"
                   variant="outline"
-                  size="lg"
+                  size="md"
+                  href="/register"
                 >
-                  Register Now!
+                  Register as a business
+                </CButton>
+                <CButton
+                  color="light"
+                  variant="outline"
+                  size="md"
+                  style="margin-left:10px;"
+                    href="/staff/register"
+                >
+                  Register as a staff
                 </CButton>
               </CCardBody>
             </CCard>
@@ -60,7 +77,41 @@
 </template>
 
 <script>
+import { AUTH_REQUEST } from "../../store/actions/auth";
+
 export default {
-  name: 'Login'
+  name: 'Login',
+  data () {
+    return {
+      message:"",
+      error:false,
+      email:"",
+        password:""
+    }
+  },
+  methods:{
+      login(){
+          // const axios = require('axios');
+          // axios.post(process.env.VUE_APP_API_BASE_URL +'Accounts', this.form)
+          // .then((res) => {
+          //     const token = res.data.accessToken
+          //     localStorage.setItem('user-token', token)
+
+          //     this.$router.push('/dashboard')
+          // })
+          // .catch((err) => {
+          //   console.log(err.response)
+          //     if(err.response){
+          //         this.message = err.response.data.message; 
+          //         this.error = true
+          //       }    
+          //   });
+
+        const { email, password } = this
+          this.$store.dispatch(AUTH_REQUEST, {email, password }).then(() => {
+            this.$router.push('/')
+          })
+       }
+  }
 }
 </script>

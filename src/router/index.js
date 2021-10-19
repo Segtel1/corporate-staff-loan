@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '../store/index'
 
 // Containers
 const TheContainer = () => import('@/containers/TheContainer')
@@ -52,15 +53,33 @@ const Page404 = () => import('@/views/pages/Page404')
 const Page500 = () => import('@/views/pages/Page500')
 const Login = () => import('@/views/pages/Login')
 const Register = () => import('@/views/pages/Register')
+const StaffRegister = () => import('@/views/pages/StaffRegister')
+const ConfirmAccount = () => import('@/views/pages/ConfirmAccount')
 
 // Users
 const Users = () => import('@/views/users/Users')
 const User = () => import('@/views/users/User')
 
+const ifNotAuthenticated = (to, from, next) => {
+  if (!store.getters.isAuthenticated) {
+    next()
+    return
+  }
+  next('/')
+}
+
+const ifAuthenticated = (to, from, next) => {
+  if (store.getters.isAuthenticated) {
+    next()
+    return
+  }
+  next('/login')
+}
+
 Vue.use(Router)
 
 export default new Router({
-  mode: 'hash', // https://router.vuejs.org/api/#mode
+  mode: 'history', // https://router.vuejs.org/api/#mode
   linkActiveClass: 'active',
   scrollBehavior: () => ({ y: 0 }),
   routes: configRoutes()
@@ -77,7 +96,8 @@ function configRoutes () {
         {
           path: 'dashboard',
           name: 'Dashboard',
-          component: Dashboard
+          component: Dashboard,
+          beforeEnter: ifAuthenticated,
         },
         {
           path: 'theme',
@@ -308,8 +328,8 @@ function configRoutes () {
       ]
     },
     {
-      path: '/pages',
-      redirect: '/pages/404',
+      path: '/',
+      redirect: '/404',
       name: 'Pages',
       component: {
         render (c) { return c('router-view') }
@@ -328,12 +348,26 @@ function configRoutes () {
         {
           path: 'login',
           name: 'Login',
-          component: Login
+          component: Login,
+          beforeEnter: ifNotAuthenticated
         },
         {
           path: 'register',
           name: 'Register',
-          component: Register
+          component: Register,
+          beforeEnter: ifNotAuthenticated
+        },
+        {
+          path: 'staff/register',
+          name: 'Staff Register',
+          component: StaffRegister,
+          beforeEnter: ifNotAuthenticated
+        },
+        {
+          path: 'confirm-account',
+          name: 'Confirm Account',
+          component: ConfirmAccount,
+          beforeEnter: ifNotAuthenticated
         }
       ]
     }
